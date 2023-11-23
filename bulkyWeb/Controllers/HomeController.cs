@@ -1,4 +1,4 @@
-using bulkyWeb.Models;
+﻿using bulkyWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -15,7 +15,7 @@ namespace bulkyWeb.Controllers
 
         public IActionResult Index()
         {
-            return View();//test
+            return View();//εφοσον δεν εχει κατι μεσα στις παρενθεσεις γυρναει το index αλλιως οτι του βαλω πχ "Privact"
         }
 
         public IActionResult Privacy()
