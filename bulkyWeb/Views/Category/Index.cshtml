@@ -1,27 +1,44 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-<table clash="table-boardered table-striped">
-    <tr>
-        <th>Category Name</th>
-        <th>id</th>
-        <th>number</th>
-    </tr>
-    <tr>
-        <td>Row 1, Cell 1</td>
-        <td>Row 1, Cell 2</td>
-        <td>Row 1, Cell 3</td>
-    </tr>
-    <tr>
-        <td>Row 2, Cell 1</td>
-        <td>Row 2, Cell 2</td>
-        <td>Row 2, Cell 3</td>
-    </tr>
-    <tr>
-        <td>Row 3, Cell 1</td>
-        <td>Row 3, Cell 2</td>
-        <td>Row 3, Cell 3</td>
-    </tr>
-</table>
+﻿
+@model List<Category>
+
+<partial name="_Notification" />
+    <div class="container">
+        <div class="row pt-4 ">
+            <div class="col-6">
+                <h2 class="text-primary">Category List</h2>
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="Category" asp-action="Create" class="btn btn-primary">
+                    Create new Category
+                </a>
+            </div>
+        </div>
+    </div>
+    <table class="table table-boardered table-striped">
+        <thead>
+            <tr>
+                <th>Category Name</th>
+                <th>number</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var obj in Model)
+        {
+            <tr>
+                <td>@obj.Name</td>
+                <td>@obj.DisplayOrder</td>
+                <td>
+                    <div class="w-75 btn-group" role="group">
+                        <a asp-controller="Category" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-primary mx-2">@* //περναω στο κουμπι edit το id *@
+                            Edit
+                        </a>
+                        <a asp-controller="Category" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
+                            Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        
+        }
+        </tbody>
+    </table>
