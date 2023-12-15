@@ -1,22 +1,24 @@
-﻿using bulkyWeb.Data;
-using bulkyWeb.Models;
+﻿using bulky.DataAccess.Repository.iRepository;
+using bulky.DataAccess.Data;
+using bulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace bulkyWeb.Controllers
+namespace bulkyWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
 
-        private readonly ApplicationDbContext _db;//Μια μεταβλητη που περναμε μέσα local var για να το προβαλουμε
-        public CategoryController(ApplicationDbContext db)//οτι παρουμε απο τον controller το κανουμε assign σε local var
+        private readonly IUnitOfWork _UnitOfWork;//Μια μεταβλητη που περναμε μέσα local var για να το προβαλουμε
+        public CategoryController(IUnitOfWork UnitOfWork)//οτι παρουμε απο τον controller το κανουμε assign σε local var
         {
-            _db = db;
+            _UnitOfWork = UnitOfWork;
         }
 
 
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _db.Categories.ToList();
+            List<Category> objCategoryList = _UnitOfWork.Category.GetAll().ToList();
             return View(objCategoryList);
         }
 
@@ -38,22 +40,23 @@ namespace bulkyWeb.Controllers
             }
             if (ModelState.IsValid)//ελεγχει αν εχουμε βαλει σωστα στοιχεια (validate εχουμε βαλει στο model
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _UnitOfWork.Category.Add(obj);
+                _UnitOfWork.Save();
                 TempData["success"] = "Επιτυχής δημιουργία κατηγορίας";
                 return RedirectToAction("Index");  //τον στελνουμε να μας ξανα δειξει ολες τις κατηγοριες
             }
-           return View();
+            return View();
         }
 
         public IActionResult Edit(int? id)
         {
-            if(id==null || id == 0)
+            if (id == null || id == 0)
             {
                 return NotFound();
             }
-            Category categoriFromDb = _db.Categories.Find(id); //ΨΑΨΝΩ ΚΑΤΙ ΣΤΗΝ ΒΑΣΗ
-           // Category categoriFromDb1 = _db.Categories.FirstOrDefault(u=>u.Id==id); ΔΕΥΤΕΡΟΣ ΤΡΟΠΟΣ
+            Category categoriFromDb = _UnitOfWork.Category.Get(u => u.Id == id);
+            //Category categoriFromDb = _db.Categories.Find(id); //ΨΑΨΝΩ ΚΑΤΙ ΣΤΗΝ ΒΑΣΗ
+            // Category categoriFromDb1 = _db.Categories.FirstOrDefault(u=>u.Id==id); ΔΕΥΤΕΡΟΣ ΤΡΟΠΟΣ
             if (id == null || id == 0)
             {
                 return NotFound();
@@ -63,11 +66,11 @@ namespace bulkyWeb.Controllers
 
         [HttpPost]  //gia create category
         public IActionResult Edit(Category obj)
-        {      
+        {
             if (ModelState.IsValid)//ελεγχει αν εχουμε βαλει σωστα στοιχεια (validate εχουμε βαλει στο model
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _UnitOfWork.Category.Update(obj);
+                _UnitOfWork.Save();
                 TempData["success"] = "Επιτυχής επεξεργασία κατηγορίας";
                 return RedirectToAction("Index");  //τον στελνουμε να μας ξανα δειξει ολες τις κατηγοριες
             }
@@ -80,8 +83,8 @@ namespace bulkyWeb.Controllers
             {
                 return NotFound();
             }
-            Category categoriFromDb = _db.Categories.Find(id); //ΨΑΨΝΩ ΚΑΤΙ ΣΤΗΝ ΒΑΣΗ
-                                                               // Category categoriFromDb1 = _db.Categories.FirstOrDefault(u=>u.Id==id); ΔΕΥΤΕΡΟΣ ΤΡΟΠΟΣ
+            Category categoriFromDb = _UnitOfWork.Category.Get(u => u.Id == id); //ΨΑΨΝΩ ΚΑΤΙ ΣΤΗΝ ΒΑΣΗ
+                                                                                 // Category categoriFromDb1 = _db.Categories.FirstOrDefault(u=>u.Id==id); ΔΕΥΤΕΡΟΣ ΤΡΟΠΟΣ
             if (id == null || id == 0)
             {
                 return NotFound();
@@ -93,14 +96,15 @@ namespace bulkyWeb.Controllers
 
         public IActionResult DeletePost(int? id)
         {
-            Category objDelete = _db.Categories.Find(id); //ΨΑΨΝΩ ΚΑΤΙ ΣΤΗΝ ΒΑΣΗ
-                                                               // Category categoriFromDb1 = _db.Categories.FirstOrDefault(u=>u.Id==id); ΔΕΥΤΕΡΟΣ ΤΡΟΠΟΣ
+            Category objDelete = _UnitOfWork.Category.Get(u => u.Id == id); //ΨΑΨΝΩ ΚΑΤΙ ΣΤΗΝ ΒΑΣΗ
+                                                                            // Category categoriFromDb1 = _db.Categories.FirstOrDefault(u=>u.Id==id); ΔΕΥΤΕΡΟΣ ΤΡΟΠΟΣ
             if (objDelete == null)
             {
                 return NotFound();
+                return NotFound();
             }
-            _db.Categories.Remove(objDelete);
-            _db.SaveChanges();
+            _UnitOfWork.Category.Delete(objDelete);
+            _UnitOfWork.Save();
             TempData["success"] = "Επιτυχής διαγραφή κατηγορίας";
             return RedirectToAction("Index");  //τον στελνουμε να μας ξανα δειξει ολες τις κατηγοριες
         }
